@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% block content %}
+    <title>Upload New File</title>
+    <h1>Upload New File</h1>
+    <form method=post enctype=multipart/form-data >
+
+        <h4>Select Model:</h4>
+        <div class="radio">
+          <label>
+              <input type="radio" name="ml_models" id="incresnetv2" value="inception_resnet_v2"> IncResNetV2 </input>
+          </label>
+        </div>
+
+        <div class="radio">
+          <label>
+              <input type="radio" name="ml_models" id="mobilenetv1" value="mobilenet_v1"> MobileNetV1  </input><br>
+          </label>
+        </div>
+
+        <h4>Graph Importing Options:</h4>
+        <div class="radio">
+          <label>
+            <input type="radio" name="import_options" id="checkpoints" value="checkpoints"> Checkpoints </input>
+          </label>
+        </div>
+
+        <div class="radio">
+          <label>
+            <input type="radio" name="import_options" id="frozen"      value="frozen">      Frozen      </input>
+          </label>
+        </div>
+
+        <div class="radio">
+          <label>
+            <input type="radio" name="import_options" id="compiled"    value="compiled">    Compiled    </input><br>
+          </label>
+        </div>
+
+        <h4>Upload your training images<data></data>:</h4>
+
+        <!--
+        <input type=file name=file><input type=submit class="btn btn-primary" value=Upload>
+        -->
+
+        <!--
+        <input type=file name=file><input type=submit value=Upload>
+        -->
+
+
+        How many classes do you want to train?
+        <input type="text" name="Nclasses" placeholder="Enter Number Classes"><br><br>
+
+        <table>
+          <tr>
+            <th>Class</th>
+            <th>Select File</th>
+            <th>Number of selected images</th>
+          </tr>
+          <tr id="file1">
+            <td><input type="text" name="Class1" placeholder="Enter Name of Class"></td>
+            <td><input type="file" name=file1 multiple></td>
+            <td>10</td>
+          </tr>
+          <tr id="file2">
+            <td><input type="text" name="Class2" placeholder="Enter Name of Class"></td>
+            <td><input type="file" name=file2 multiple></td>
+            <td>8</td>
+          </tr>
+          <tr id="file3">
+            <td><input type="text" name="Class3" placeholder="Enter Name of Class"></td>
+            <td><input type="file" name=file3 multiple></td>
+            <td>8</td>
+          </tr>
+        </table>
+        <input type=button value=AddNewClass><br><br><br>
+
+        <input type=submit value=Train!>
+
+    </form>
+
+
+<style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+{% endblock %}
