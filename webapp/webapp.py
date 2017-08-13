@@ -21,15 +21,8 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        uploaded_files = request.files.getlist('file')
-        #files = request.files.getlist('file')
-        print('uploaded_files', uploaded_files)
 
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            print('No file part')
-            return redirect(request.url)
-
+        #1. Get general form elements
         if 'import_options' not in request.form:
             print('No import option selected')
             return redirect(request.url)
@@ -38,39 +31,53 @@ def index():
             print('No model selected')
             return redirect(request.url)
 
-
-        '''Optional: check if the post request has import_options or ml_models.
-        But more elegant is to do it in the front end.
-
-        print (request.form)
-        print (type(request.form))
-
-        if 'import_options' not in request.form:
-            print('No importing options selected')
-            return redirect(request.url)
-
-        if 'ml_models' not in request.form:
-            print('No ml_models selected')
-            return redirect(request.url)
-        '''
-        
-        #Variables for request parameters:
-        file = request.files['file']
         import_option = request.form['import_options']
         model_name = request.form['ml_models']
 
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
-            print('No selected file')
+
+        #2. Get table form elements
+        # check if the post request has the file part
+        if 'file0' not in request.files:
+            print('No file part')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            #return redirect('/uploaded')
-            print('return successful')
-            return redirect(url_for('uploaded', filename=filename, import_option=import_option, model_name=model_name))
+
+        print('--------------------------------')
+        print('request',request)
+        print('request.form',request.form)
+        print('dict(request.form)',dict(request.form))
+        print('request.files',request.files)
+        print('dict(request.files)',dict(request.files))
+        print('list_request.files.keys()',list(request.files.keys()))
+
+        file_keys = list(request.files.keys())
+        for file_key in file_keys:
+
+            # Variables for request parameters:
+            file = request.files[file_key]
+            print('file',file)
+            print('file.filename',file.filename)
+            if file.filename == '':
+                print('No selected file')
+                return redirect(request.url)
+
+            # if user does not select file, browser also submit a empty part without filename
+            if file and allowed_file(file.filename):
+                class_name = request.form[file_key]
+                filename = secure_filename(file.filename)
+                print('class_name, filename',class_name, filename)
+                print('app.config[UPLOAD_FOLDER] + / + class_name',app.config['UPLOAD_FOLDER'] + '/' + class_name)
+                print('--------------------------------')
+
+                if not os.path.exists(app.config['UPLOAD_FOLDER'] + '/' + class_name):
+                    os.makedirs(app.config['UPLOAD_FOLDER'] + '/' + class_name)
+
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/' + class_name, filename))
+                print('file saved')
+
+        return redirect(url_for('uploaded', filename=filename, import_option=import_option, model_name=model_name))
     return render_template("index.html")
+
+
 
 @app.route('/uploaded')
 def uploaded():
