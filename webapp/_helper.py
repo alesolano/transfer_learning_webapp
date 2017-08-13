@@ -24,4 +24,19 @@ for file_key in file_keys:
     file.save(os.path.join(app.config['UPLOAD_FOLDER']+'/'+class_name, filename))
 
 
-    # create_folder()
+
+
+
+request <Request 'http://127.0.0.1:5000/' [POST]>
+
+request.form ImmutableMultiDict([('import_options', 'checkpoints'), ('file2', '3'), ('file1', '2'), ('Nclasses', ''), ('file0', '1'), ('ml_models', 'inception_resnet_v2')])
+dict(request.form) {'import_options': ['checkpoints'], 'file2': ['3'], 'file1': ['2'], 'Nclasses': [''], 'file0': ['1'], 'ml_models': ['inception_resnet_v2']}
+
+request.files ImmutableMultiDict([('file2', <FileStorage: 'images (4).jpg' ('image/jpeg')>), ('file0', <FileStorage: '9k= (3).jpg' ('image/jpeg')>), ('file0', <FileStorage: '9k= (4).jpg' ('image/jpeg')>), ('file0', <FileStorage: 'images (1).jpg' ('image/jpeg')>), ('file1', <FileStorage: 'images (2).jpg' ('image/jpeg')>)])
+dict(request.files) {'file2': [<FileStorage: 'images (4).jpg' ('image/jpeg')>], 'file0': [<FileStorage: '9k= (3).jpg' ('image/jpeg')>, <FileStorage: '9k= (4).jpg' ('image/jpeg')>, <FileStorage: 'images (1).jpg' ('image/jpeg')>], 'file1': [<FileStorage: 'images (2).jpg' ('image/jpeg')>]}
+
+
+list_request.files.keys() ['file2', 'file0', 'file1']
+file <FileStorage: 'images (4).jpg' ('image/jpeg')>
+file.filename images (4).jpg
+class_name, filename 3 images_4.jpg

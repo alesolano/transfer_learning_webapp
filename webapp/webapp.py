@@ -3,6 +3,9 @@ from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from config import *
 from flask import render_template
+import time
+from predicting import Predictor
+predictor = Predictor()
 
 app = Flask(__name__)
 
@@ -10,18 +13,47 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-import time
-from predicting import Predictor
-predictor = Predictor()
-
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def create_folder_save_files(file, class_name):
+
+    print('file', file)
+    print('file.filename', file.filename)
+    if file.filename == '':
+        print('No selected file')
+        return redirect(request.url)
+
+    # if user does not select file, browser also submit a empty part without filename
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        print('class_name, filename', class_name, filename)
+        print('app.config[UPLOAD_FOLDER] + / + class_name', app.config['UPLOAD_FOLDER'] + '/' + class_name)
+        print('--------------------------------')
+
+        # Recreate folder if not exists
+        if not os.path.exists(app.config['UPLOAD_FOLDER'] + '/' + class_name):
+            os.makedirs(app.config['UPLOAD_FOLDER'] + '/' + class_name)
+
+        # Save each file in folder
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/' + class_name, filename))
+        print('file saved')
+
+def log_form_info():
+    print('--------------------------------')
+    print('request',request)
+    print('request.form',request.form)
+    print('dict(request.form)',dict(request.form))
+    print('request.files',request.files)
+    print('dict(request.files)',dict(request.files))
+    print('list_request.files.keys()',list(request.files.keys()))
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
 
+        log_form_info()
         #1. Get general form elements
         if 'import_options' not in request.form:
             print('No import option selected')
@@ -36,45 +68,15 @@ def index():
 
 
         #2. Get table form elements
-        # check if the post request has the file part
-        if 'file0' not in request.files:
-            print('No file part')
-            return redirect(request.url)
-
-        print('--------------------------------')
-        print('request',request)
-        print('request.form',request.form)
-        print('dict(request.form)',dict(request.form))
-        print('request.files',request.files)
-        print('dict(request.files)',dict(request.files))
-        print('list_request.files.keys()',list(request.files.keys()))
-
-        file_keys = list(request.files.keys())
-        for file_key in file_keys:
-
+        table_row_ids = list(request.files.keys())#List of all rows in table
+        for table_row_id in table_row_ids:
             # Variables for request parameters:
-            file = request.files[file_key]
-            print('file',file)
-            print('file.filename',file.filename)
-            if file.filename == '':
-                print('No selected file')
-                return redirect(request.url)
+            class_name = request.form[table_row_id]
+            files= request.files.getlist(table_row_id)
+            for file in files:
+                create_folder_save_files(file, class_name)
 
-            # if user does not select file, browser also submit a empty part without filename
-            if file and allowed_file(file.filename):
-                class_name = request.form[file_key]
-                filename = secure_filename(file.filename)
-                print('class_name, filename',class_name, filename)
-                print('app.config[UPLOAD_FOLDER] + / + class_name',app.config['UPLOAD_FOLDER'] + '/' + class_name)
-                print('--------------------------------')
-
-                if not os.path.exists(app.config['UPLOAD_FOLDER'] + '/' + class_name):
-                    os.makedirs(app.config['UPLOAD_FOLDER'] + '/' + class_name)
-
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/' + class_name, filename))
-                print('file saved')
-
-        return redirect(url_for('uploaded', filename=filename, import_option=import_option, model_name=model_name))
+        return redirect(url_for('uploaded', import_option=import_option, model_name=model_name))
     return render_template("index.html")
 
 
