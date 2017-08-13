@@ -68,16 +68,29 @@ def index():
 
 
         #2. Get table form elements
+        classes_list = []
         table_row_ids = list(request.files.keys())#List of all rows in table
         for table_row_id in table_row_ids:
             # Variables for request parameters:
             class_name = request.form[table_row_id]
+            print('class_name',class_name)
+            classes_list.extend(class_name)
             files= request.files.getlist(table_row_id)
             for file in files:
                 create_folder_save_files(file, class_name)
 
-        return redirect(url_for('uploaded', import_option=import_option, model_name=model_name))
+        print('classes_list',classes_list)
+
+        return redirect(url_for('training', import_option=import_option, model_name=model_name, classes_list=classes_list))
     return render_template("index.html")
+
+@app.route('/training')
+def training():
+    model_name = request.args.get('model_name')
+    import_option = request.args.get('import_option')
+    classes_list = request.args.getlist('classes_list')
+    print('classes_list_training',classes_list)
+    return render_template("training.html",import_option=import_option, model_name=model_name, classes_list=classes_list)
 
 
 
