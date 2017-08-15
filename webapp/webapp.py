@@ -61,6 +61,7 @@ def index():
             return redirect(request.url)
 
         model_name = request.form['ml_models']
+        retrained_model_name = request.form['retrained_model_name']
 
 
         #2. Get table form elements
@@ -79,7 +80,7 @@ def index():
         print('classes_list',classes_list)
 
 
-        return redirect(url_for('training', model_name=model_name, classes_list=classes_list))
+        return redirect(url_for('training', model_name=model_name, classes_list=classes_list, retrained_model_name=retrained_model_name))
     return render_template("index.html")
 
 
@@ -88,10 +89,11 @@ def training():
 
     import time
     time.sleep(3)
-    retrained_model_name = 'flowers'
-
+    retrained_model_name = request.args.get('retrained_model_name')
     model_name = request.args.get('model_name')
     classes_list = request.args.getlist('classes_list')
+
+    print('retrained_model_name',retrained_model_name)
 
     from extracting_features import extract_features
     #extract_features(retrained_model_name, model_name, classes_list)
