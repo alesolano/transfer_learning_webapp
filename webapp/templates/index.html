@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <title>Upload New File</title>
-    <h1>Upload New File</h1>
+    <title>Transfer Learning</title>
+    <h1>Transfer Learning</h1>
     <form method=post enctype=multipart/form-data >
 
-        <h4>Select Model:</h4>
+        <h4>Select Model to Retrain:</h4>
         <div class="radio">
           <label>
               <input type="radio" name="ml_models" id="incresnetv2" value="inception_resnet_v2"> IncResNetV2 </input>
@@ -29,9 +29,12 @@
         <input type=file name=file><input type=submit value=Upload>
         -->
 
-
         How many classes do you want to train?
         <input type="text" name="Nclasses" placeholder="Enter Number Classes"><br><br>
+
+
+        Give it a name to the retrained model:
+        <input type="text" name="retrained_model_name" placeholder="Retrained Model Name"><br><br>
 
         <table>
           <tr>
@@ -50,19 +53,55 @@
             <td>8</td>
           </tr>
           <tr id="file2">
-            <td><input type="text" name="row2" placeholder="Enter Name of Class"></td>
-            <td><input type="file" name=row2 multiple></td>
-            <td>8</td>
+              <td><input type="text" name="row2" placeholder="Enter Name of Class"></td>
+              <td><input type="file" name=row2 multiple></td>
+              <td>8</td>
           </tr>
         </table>
         <input type=button value=AddNewClass><br><br><br>
 
-        <input type=submit value=Train!>
+        <input id=submit_button type=submit value=Train!>
+
+        <div id="myloader" style="display: none; position: relative; top: -40px;">
+            <center>
+            <div class="loader">
+            </div>
+
+            Please wait. <br>
+            Model being retrained with new images.<br>
+            This might take some minutes.
+            </center>
+        </div>
+
+
 
     </form>
 
 
+<script>
+$(document).ready(function(){
+    $("#myloader").hide();
+    $("#submit_button").click(function(){
+        $("#myloader").show();
+    });
+});
+</script>
+
 <style>
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;

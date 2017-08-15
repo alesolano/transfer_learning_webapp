@@ -11,6 +11,8 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -47,6 +49,9 @@ def log_form_info():
     #print('dict(request.files)',dict(request.files))
     #print('list_request.files.keys()',list(request.files.keys()))
 
+def get_immediate_subdirectories(a_dir):
+    return [name for name in os.listdir(a_dir)
+            if os.path.isdir(os.path.join(a_dir, name))]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -59,6 +64,7 @@ def index():
             return redirect(request.url)
 
         model_name = request.form['ml_models']
+        retrained_model_name = request.form['retrained_model_name']
 
 
         #2. Get table form elements
@@ -76,28 +82,69 @@ def index():
 
         print('classes_list',classes_list)
 
-        return redirect(url_for('training', model_name=model_name, classes_list=classes_list))
+
+        return redirect(url_for('training', model_name=model_name, classes_list=classes_list, retrained_model_name=retrained_model_name))
     return render_template("index.html")
 
 
-@app.route('/training')
+@app.route('/training', methods=['GET', 'POST'])
 def training():
+    if request.method == 'GET':
+        import time
+        time.sleep(3)
+        retrained_model_name = request.args.get('retrained_model_name')
+        model_name = request.args.get('model_name')
+        classes_list = request.args.getlist('classes_list')
+        print('retrained_model_name',retrained_model_name)
 
-    retrained_model_name = 'flowers'
+        from extracting_features import extract_features
+        #extract_features(retrained_model_name, model_name, classes_list)
 
-    model_name = request.args.get('model_name')
-    classes_list = request.args.getlist('classes_list')
+        from retraining import retrain
+        #retrain(retrained_model_name, model_name)
 
-    from extracting_features import extract_features
-    extract_features(retrained_model_name, model_name, classes_list)
+        #print('classes_list_training',classes_list)
+        model_short_name = model_name
+        model_long_name = models_names_dict[model_short_name]
 
-    from retraining import retrain
-    retrain(retrained_model_name, model_name)
+        available_retrained_models = get_immediate_subdirectories('./retrained_models/' + retrained_model_name + '/')
+        return render_template("training.html",
+                               model_short_name=model_short_name,
+                               model_long_name=model_long_name,
+                               classes_list=classes_list,
+                               retrained_model_name=retrained_model_name,
+                               available_retrained_models = available_retrained_models)
 
-    #print('classes_list_training',classes_list)
-    return render_template("training.html", model_name=model_name, classes_list=classes_list)
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print('No file part')
+            return redirect(request.url)
 
+        if 'import_options' not in request.form:
+            print('No import option selected')
+            return redirect(request.url)
 
+        if 'ml_models' not in request.form:
+            print('No model selected')
+            return redirect(request.url)
+
+        #Variables for request parameters:
+        file = request.files['file']
+        import_option = request.form['import_options']
+        model_name = request.form['ml_models']
+
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            print('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            #return redirect('/uploaded')
+            print('return successful')
+            return redirect(url_for('uploaded', filename=filename, import_option=import_option, model_name=model_name))
 
 @app.route('/uploaded')
 def uploaded():
