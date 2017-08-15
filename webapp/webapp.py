@@ -4,8 +4,6 @@ from werkzeug.utils import secure_filename
 from config import *
 from flask import render_template
 import time
-from predicting import Predictor
-predictor = Predictor()
 
 app = Flask(__name__)
 
@@ -18,8 +16,8 @@ def allowed_file(filename):
 
 def create_folder_save_files(file, class_name):
 
-    print('file', file)
-    print('file.filename', file.filename)
+    #print('file', file)
+    #print('file.filename', file.filename)
     if file.filename == '':
         print('No selected file')
         return redirect(request.url)
@@ -27,9 +25,9 @@ def create_folder_save_files(file, class_name):
     # if user does not select file, browser also submit a empty part without filename
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        print('class_name, filename', class_name, filename)
-        print('app.config[UPLOAD_FOLDER] + / + class_name', app.config['UPLOAD_FOLDER'] + '/' + class_name)
-        print('--------------------------------')
+        #print('class_name, filename', class_name, filename)
+        #print('app.config[UPLOAD_FOLDER] + / + class_name', app.config['UPLOAD_FOLDER'] + '/' + class_name)
+        #print('--------------------------------')
 
         # Recreate folder if not exists
         if not os.path.exists(app.config['UPLOAD_FOLDER'] + '/' + class_name):
@@ -37,16 +35,17 @@ def create_folder_save_files(file, class_name):
 
         # Save each file in folder
         file.save(os.path.join(app.config['UPLOAD_FOLDER'] + '/' + class_name, filename))
-        print('file saved')
+        #print('file saved')
+
 
 def log_form_info():
     print('--------------------------------')
     print('request',request)
-    print('request.form',request.form)
+    #print('request.form',request.form)
     print('dict(request.form)',dict(request.form))
-    print('request.files',request.files)
-    print('dict(request.files)',dict(request.files))
-    print('list_request.files.keys()',list(request.files.keys()))
+    #print('request.files',request.files)
+    #print('dict(request.files)',dict(request.files))
+    #print('list_request.files.keys()',list(request.files.keys()))
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -55,15 +54,10 @@ def index():
 
         log_form_info()
         #1. Get general form elements
-        if 'import_options' not in request.form:
-            print('No import option selected')
-            return redirect(request.url)
-
         if 'ml_models' not in request.form:
             print('No model selected')
             return redirect(request.url)
 
-        import_option = request.form['import_options']
         model_name = request.form['ml_models']
 
 
@@ -73,24 +67,35 @@ def index():
         for table_row_id in table_row_ids:
             # Variables for request parameters:
             class_name = request.form[table_row_id]
-            print('class_name',class_name)
-            classes_list.extend(class_name)
-            files= request.files.getlist(table_row_id)
+            print('class_name', class_name)
+            classes_list.append(class_name)
+            files = request.files.getlist(table_row_id)
             for file in files:
                 create_folder_save_files(file, class_name)
+            print("Saved {} files for class {}".format(len(files), class_name))
 
         print('classes_list',classes_list)
 
-        return redirect(url_for('training', import_option=import_option, model_name=model_name, classes_list=classes_list))
+        return redirect(url_for('training', model_name=model_name, classes_list=classes_list))
     return render_template("index.html")
+
 
 @app.route('/training')
 def training():
+
+    retrained_model_name = 'flowers'
+
     model_name = request.args.get('model_name')
-    import_option = request.args.get('import_option')
     classes_list = request.args.getlist('classes_list')
-    print('classes_list_training',classes_list)
-    return render_template("training.html",import_option=import_option, model_name=model_name, classes_list=classes_list)
+
+    from extracting_features import extract_features
+    extract_features(retrained_model_name, model_name, classes_list)
+
+    from retraining import retrain
+    retrain(retrained_model_name, model_name)
+
+    #print('classes_list_training',classes_list)
+    return render_template("training.html", model_name=model_name, classes_list=classes_list)
 
 
 
@@ -98,16 +103,13 @@ def training():
 def uploaded():
     filename = request.args.get('filename')
     model_name = request.args.get('model_name')
-    import_option = request.args.get('import_option')
-    print("Selected import option:", import_option)
     print("Selected model:", model_name)
     print("Filename:", filename)
 
     begin = time.time()
     pred_class, pred_score = predictor.evaluate(
         filename=request.args.get('filename'),
-        model_name=model_name,
-        graph_type=import_option)
+        model_name=model_name)
     end = time.time()
     
     return render_template("uploaded.html",

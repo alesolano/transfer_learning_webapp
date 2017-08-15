@@ -9,7 +9,7 @@ source activate transfer_webapp
 
 ```
 pip install tensorflow
-conda install -c conda-forge tqdm
+conda install -c anaconda flask
 conda install scikit-learn
 ```
 
@@ -23,8 +23,7 @@ Run `download_and_save_inceptionresnet.py` to download Inception Resnet V2.
 ## Run
 
 ```
-python get_data.py
-python extract_features.py
-python retrain.py
-python predict_flower.py tests/rose_test.jpg
+cd webapp
+export FLASK_APP=webapp.py
+flask run
 ```
