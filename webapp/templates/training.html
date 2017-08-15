@@ -13,7 +13,16 @@
     <h2>Test your model with more images</h2>
     <form method=post enctype=multipart/form-data >
 
-        <h4>Select Model:</h4>
+        <h4>Select Retrained Model:</h4>
+
+        <div class="radio">
+          <label>
+              <input type="radio" name="ml_models" id="incresnetv2" value={{model_short_name}}> {{model_long_name}} </input>
+          </label>
+        </div>
+
+
+        <!--
         <div class="radio">
           <label>
               <input type="radio" name="ml_models" id="incresnetv2" value="inception_resnet_v2"> IncResNetV2 </input>
@@ -25,6 +34,7 @@
               <input type="radio" name="ml_models" id="mobilenetv1" value="mobilenet_v1"> MobileNetV1  </input><br>
           </label>
         </div>
+        -->
 
         <h4>Graph Importing Options:</h4>
         <div class="radio">

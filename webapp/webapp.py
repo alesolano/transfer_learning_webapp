@@ -11,6 +11,8 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -76,6 +78,7 @@ def index():
 
         print('classes_list',classes_list)
 
+
         return redirect(url_for('training', model_name=model_name, classes_list=classes_list))
     return render_template("index.html")
 
@@ -97,7 +100,9 @@ def training():
     #retrain(retrained_model_name, model_name)
 
     #print('classes_list_training',classes_list)
-    return render_template("training.html", model_name=model_name, classes_list=classes_list)
+    model_short_name = model_name
+    model_long_name = models_names_dict[model_short_name]
+    return render_template("training.html", model_short_name=model_short_name, model_long_name=model_long_name, classes_list=classes_list)
 
 
 
