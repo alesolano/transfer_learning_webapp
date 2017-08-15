@@ -83,16 +83,18 @@ def index():
 @app.route('/training')
 def training():
 
+    import time
+    time.sleep(3)
     retrained_model_name = 'flowers'
 
     model_name = request.args.get('model_name')
     classes_list = request.args.getlist('classes_list')
 
     from extracting_features import extract_features
-    extract_features(retrained_model_name, model_name, classes_list)
+    #extract_features(retrained_model_name, model_name, classes_list)
 
     from retraining import retrain
-    retrain(retrained_model_name, model_name)
+    #retrain(retrained_model_name, model_name)
 
     #print('classes_list_training',classes_list)
     return render_template("training.html", model_name=model_name, classes_list=classes_list)

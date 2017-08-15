@@ -50,28 +50,55 @@
             <td>8</td>
           </tr>
           <tr id="file2">
-            <td><input type="text" name="row2" placeholder="Enter Name of Class"></td>
-
-            <td><!-- TODO separate popup -->
-                <label class="fileupload text-center">
-                  <input class="fileupload au-target" type="file" name="artifactf" multiple="" au-target-id="38" data-url="https://mgmt-api.vize.ai/tasks/1896/samples" data-form-data="{&quot;gold_class&quot;: 8079}">
-                  <span style="width:100%">
-                    <i class="fa fa-upload" aria-hidden="true" style="padding-right: 10px;"></i> Upload images
-                  </span>
-                </label>
-            </td>
-
-            <td>8</td>
+              <td><input type="text" name="row2" placeholder="Enter Name of Class"></td>
+              <td><input type="file" name=row2 multiple></td>
+              <td>8</td>
           </tr>
         </table>
         <input type=button value=AddNewClass><br><br><br>
 
-        <input type=submit value=Train!>
+        <input id=submit_button type=submit value=Train!>
+
+        <div id="myloader" style="display: none; position: relative; top: -40px;">
+            <center>
+            <div class="loader">
+            </div>
+
+            Please wait. <br>
+            Model being retrained with new images.<br>
+            This might take some minutes.
+            </center>
+        </div>
+
+
 
     </form>
 
 
+<script>
+$(document).ready(function(){
+    $("#myloader").hide();
+    $("#submit_button").click(function(){
+        $("#myloader").show();
+    });
+});
+</script>
+
 <style>
+.loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
