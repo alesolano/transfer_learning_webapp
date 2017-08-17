@@ -3,21 +3,22 @@
     <div>
         <title>Model succesfully trained!</title>
         <h2>Model succesfully trained!</h2>
-        Model used: {{model_long_name}}<br>
+        Model used: {{model_name}}<br>
         Classes in retrained model: {{ classes_list|join(', ') }}
     </div>
     <h3>Test your model with other images</h3>
     <form method=post enctype=multipart/form-data >
         <h4>Select Available Retrained Models:</h4>
-        {% for retrained_model in available_retrained_models %}
+        {% for imagenet_model_name in available_retrained_models %}
             <div class="radio">
               <label>
-                  <input type="radio" name="ml_models" id={{retrained_model}} value={{retrained_model}}>
-                    {{retrained_model_name}} - {{retrained_model}} </input>
+                  <input type="radio" name="ml_models" id={{retrained_model}} value={{imagenet_model_name}}>
+                    {{retrained_model_name}} - {{imagenet_model_name}} </input>
               </label>
             </div>
         {% endfor %}
 
+        <!--
         <h4>Graph Importing Options:</h4>
         <div class="radio">
           <label>
@@ -36,6 +37,7 @@
             <input type="radio" name="import_options" id="compiled"    value="compiled">    Compiled    </input><br>
           </label>
         </div>
+        -->
 
         <h4>Upload image to classify:</h4>
         <input type=file name=file><input type=submit value=Upload>

@@ -116,8 +116,8 @@ def retrain(retrained_model_name, imagenet_model_name):
                         })
                     print("Validation Acc: {:.4f}".format(val_acc))
         
-        saver.save(sess, './retrained_models/'+retrained_model_name+'/'+imagenet_model_name+'/flowers_model.ckpt')
-        print('Model trained and saved in ./retrained_models/'+retrained_model_name+'/'+imagenet_model_name+'/flowers_model.ckpt')  
+        saver.save(sess, './retrained_models/'+retrained_model_name+'/'+imagenet_model_name+'/model.ckpt')
+        print('Model trained and saved in ./retrained_models/'+retrained_model_name+'/'+imagenet_model_name+'/model.ckpt')
 
         test_acc = sess.run(accuracy, feed_dict={
             inputs_: test_x,
