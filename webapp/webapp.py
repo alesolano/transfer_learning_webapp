@@ -103,7 +103,7 @@ def training():
         extract_features(retrained_model_name, model_name, classes_list)
 
         from retraining import retrain
-        retrain(retrained_model_name, model_name)
+        test_acc = retrain(retrained_model_name, model_name)
 
         #print('classes_list_training',classes_list)
         #model_short_name = model_name
@@ -113,6 +113,7 @@ def training():
         return render_template("training.html",
                                #model_short_name=model_short_name,
                                #model_long_name=model_long_name,
+                               test_acc=test_acc,
                                model_name=model_name,
                                classes_list=classes_list,
                                retrained_model_name=retrained_model_name,

@@ -124,3 +124,4 @@ def retrain(retrained_model_name, imagenet_model_name):
             labels_: test_y
             })
         print("Test accuracy: {:.4f}".format(test_acc))
+        return round(100*test_acc, 2)
